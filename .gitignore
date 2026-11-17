@@ -1,0 +1,12 @@
+bin/
+obj/
+dist/
+installer/publish/
+installer/PawnIO_setup.exe
+*.user
+*.suo
+.vs/
+regs-before.bin
+memprobe.txt
+sweep.txt
+sweep-fix.txt

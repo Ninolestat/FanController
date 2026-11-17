@@ -1,0 +1,206 @@
+<Window x:Class="FanCtl.UI.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:FanCtl.UI"
+        Title="Fan Controller" Width="1000" Height="640" MinWidth="780" MinHeight="500"
+        WindowStartupLocation="CenterScreen"
+        Foreground="{DynamicResource Text}"
+        FontFamily="Segoe UI Variable Text, Segoe UI" FontSize="13"
+        UseLayoutRounding="True" SnapsToDevicePixels="True">
+
+    <Grid Margin="16,10,20,16">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="260" />
+            <ColumnDefinition Width="16" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- Conflict banner -->
+        <Border x:Name="Banner" Grid.ColumnSpan="3" Background="{DynamicResource Warn}" CornerRadius="6"
+                Padding="12,8" Margin="0,0,0,12" Visibility="Collapsed">
+            <TextBlock x:Name="BannerText" TextWrapping="Wrap" />
+        </Border>
+
+        <!-- Sidebar -->
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Hidden" Focusable="False">
+            <StackPanel Margin="0,6,0,0">
+                <TextBlock Style="{StaticResource Section}" Text="TEMPERATURE" />
+                <ItemsControl x:Name="TempList" Focusable="False">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate DataType="{x:Type local:TempVm}">
+                            <Grid Margin="10,3" ToolTip="{Binding Hw}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel>
+                                    <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" />
+                                    <TextBlock Text="{Binding Hw}" Style="{StaticResource Dim}" FontSize="10.5"
+                                               Foreground="{DynamicResource Text3}" TextTrimming="CharacterEllipsis" />
+                                </StackPanel>
+                                <TextBlock Grid.Column="1" Text="{Binding Text}" FontFamily="{StaticResource Display}"
+                                           FontSize="18" VerticalAlignment="Center" Margin="10,0,0,0" />
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <Grid Margin="0,20,0,0">
+                    <TextBlock Style="{StaticResource Section}" Text="VENTOLE" />
+                    <TextBlock Text="trascina per riordinare" FontSize="10.5" Foreground="{DynamicResource Text3}"
+                               HorizontalAlignment="Right" Margin="0,0,10,0" />
+                </Grid>
+                <ListBox x:Name="FanList" Style="{StaticResource PlainList}" ItemContainerStyle="{StaticResource FanItem}"
+                         SelectionChanged="FanList_SelectionChanged"
+                         PreviewMouseLeftButtonDown="FanList_PreviewMouseLeftButtonDown"
+                         PreviewMouseMove="FanList_PreviewMouseMove"
+                         PreviewMouseLeftButtonUp="FanList_PreviewMouseLeftButtonUp"
+                         LostMouseCapture="FanList_LostMouseCapture"
+                         PreviewKeyDown="FanList_PreviewKeyDown">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate DataType="{x:Type local:FanVm}">
+                            <Grid Opacity="{Binding Opacity}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel>
+                                    <TextBlock Text="{Binding Name}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+                                    <TextBlock x:Name="St" Text="{Binding Status}" Style="{StaticResource Dim}" FontSize="11"
+                                               TextTrimming="CharacterEllipsis" ToolTip="{Binding Status}" />
+                                </StackPanel>
+                                <TextBlock Grid.Column="1" Margin="10,0,0,0" Text="{Binding RpmText}" VerticalAlignment="Center" />
+                            </Grid>
+                            <DataTemplate.Triggers>
+                                <DataTrigger Binding="{Binding Warn}" Value="True">
+                                    <Setter TargetName="St" Property="Foreground" Value="#D83B01" />
+                                </DataTrigger>
+                            </DataTemplate.Triggers>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+                <Button x:Name="EmptyToggle" Style="{StaticResource Ghost}" HorizontalAlignment="Left" Margin="0,4,0,0"
+                        Click="EmptyToggle_Click" Visibility="Collapsed" />
+            </StackPanel>
+        </ScrollViewer>
+
+        <StackPanel Grid.Row="2" Margin="0,12,0,0">
+            <Button Style="{StaticResource Ghost}" HorizontalAlignment="Left" Content="Restituisci tutte al BIOS"
+                    Click="ResetAll_Click" ToolTip="Tutte le ventole tornano su Auto (BIOS / Kraken). Le curve salvate restano." />
+            <CheckBox x:Name="StartupBox" Style="{StaticResource Switch}" Content="Avvia con Windows"
+                      Margin="10,8,0,0" Click="StartupBox_Click" />
+        </StackPanel>
+
+        <!-- Detail -->
+        <Border Grid.Row="1" Grid.RowSpan="2" Grid.Column="2" Style="{StaticResource CardBorder}" Padding="22,18,22,16">
+            <Grid x:Name="Detail" Visibility="Hidden">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBox x:Name="NameBox" Style="{StaticResource TitleBox}" MinWidth="80" MaxWidth="420"
+                                     TextChanged="NameBox_TextChanged" KeyDown="NameBox_KeyDown" />
+                            <Button Style="{StaticResource Ghost}" Click="Rename_Click" ToolTip="Rinomina (F2)"
+                                    VerticalAlignment="Center" Margin="4,0,0,0"
+                                    FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Content="&#xE70F;" />
+                            <Button x:Name="IdentifyBtn" Style="{StaticResource Ghost}" Click="Identify_Click" VerticalAlignment="Center"
+                                    Content="Identifica" ToolTip="Fa pulsare la ventola (100% / 25%) per 8 secondi" />
+                        </StackPanel>
+                        <TextBlock x:Name="HwText" Style="{StaticResource Dim}" Margin="5,2,0,0" />
+                    </StackPanel>
+                    <StackPanel Grid.Column="1" VerticalAlignment="Top" HorizontalAlignment="Right">
+                        <TextBlock x:Name="RpmBig" FontFamily="{StaticResource Display}" FontSize="30" FontWeight="Light"
+                                   HorizontalAlignment="Right" Text="—" />
+                        <TextBlock x:Name="DutyBig" Style="{StaticResource Dim}" HorizontalAlignment="Right" />
+                    </StackPanel>
+                </Grid>
+
+                <Grid Grid.Row="1" Margin="0,18,0,14">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Border Background="{DynamicResource Control}" CornerRadius="7" Padding="3" HorizontalAlignment="Left">
+                        <StackPanel Orientation="Horizontal">
+                            <RadioButton x:Name="ModeAuto" Style="{StaticResource Segment}" GroupName="mode" Content="Auto" Checked="Mode_Checked" />
+                            <RadioButton x:Name="ModeFixed" Style="{StaticResource Segment}" GroupName="mode" Content="Fissa" Checked="Mode_Checked" />
+                            <RadioButton x:Name="ModeCurve" Style="{StaticResource Segment}" GroupName="mode" Content="Curva" Checked="Mode_Checked" />
+                        </StackPanel>
+                    </Border>
+                    <StackPanel x:Name="CurveOptions" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+                        <ComboBox x:Name="SensorBox" Width="250" SelectionChanged="SensorBox_SelectionChanged">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate DataType="{x:Type local:TempVm}">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="{Binding Name}" />
+                                        <TextBlock Text="{Binding Hw}" Margin="8,0,0,0" Foreground="{DynamicResource Text3}"
+                                                   FontSize="11" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" MaxWidth="140" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </StackPanel>
+                </Grid>
+
+                <!-- Body -->
+                <Grid Grid.Row="2">
+                    <local:CurveEditor x:Name="Editor" />
+
+                    <StackPanel x:Name="FixedPanel" VerticalAlignment="Center" Margin="40,0" Visibility="Collapsed">
+                        <TextBlock x:Name="FixedText" FontFamily="{StaticResource Display}" FontSize="56" FontWeight="Light"
+                                   HorizontalAlignment="Center" Text="50%" Margin="0,0,0,12" />
+                        <Slider x:Name="FixedSlider" Minimum="0" Maximum="100" SmallChange="1" LargeChange="5"
+                                ValueChanged="FixedSlider_ValueChanged" />
+                        <TextBlock x:Name="MinHint" Style="{StaticResource Dim}" Foreground="{DynamicResource Text3}"
+                                   HorizontalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center" Margin="0,14,0,0" />
+                    </StackPanel>
+
+                    <StackPanel x:Name="AutoPanel" VerticalAlignment="Center" HorizontalAlignment="Center" Visibility="Collapsed">
+                        <TextBlock Text="Fan Controller non tocca questa ventola" HorizontalAlignment="Center" FontSize="15" />
+                        <TextBlock Text="La velocità la decide il BIOS (o il Kraken), come se l'app non ci fosse." Style="{StaticResource Dim}"
+                                   HorizontalAlignment="Center" Margin="0,6,0,0" />
+                        <TextBlock Text="Scegli «Fissa» per una velocità costante, o «Curva» per farla salire con la temperatura."
+                                   Style="{StaticResource Dim}" HorizontalAlignment="Center" Margin="0,2,0,0" />
+                    </StackPanel>
+                </Grid>
+
+                <Grid x:Name="CurveFooter" Grid.Row="3" Margin="0,10,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Style="{StaticResource Dim}" Foreground="{DynamicResource Text3}" VerticalAlignment="Center"
+                               Text="Trascina i punti · doppio clic aggiunge · clic destro rimuove"
+                               TextTrimming="CharacterEllipsis" Margin="0,0,12,0"
+                               ToolTip="Trascina i punti · doppio clic aggiunge · clic destro rimuove" />
+                    <StackPanel Grid.Column="1" Orientation="Horizontal">
+                        <Button Style="{StaticResource Ghost}" Content="Silenziosa" Click="Preset_Click" Tag="silent" />
+                        <Button Style="{StaticResource Ghost}" Content="Bilanciata" Click="Preset_Click" Tag="balanced" />
+                        <Button Style="{StaticResource Ghost}" Content="Prestazioni" Click="Preset_Click" Tag="perf" />
+                        <Button Style="{StaticResource Ghost}" Content="Copia" Click="CopyCurve_Click"
+                                ToolTip="Copia la curva di questa ventola" />
+                        <Button x:Name="PasteBtn" Style="{StaticResource Ghost}" Content="Incolla" Click="PasteCurve_Click"
+                                IsEnabled="False" ToolTip="Incolla la curva copiata su questa ventola" />
+                        <Button Style="{StaticResource Ghost}" Content="Applica a tutte" Click="ApplyAll_Click"
+                                ToolTip="Copia modalità, sensore e curva su tutte le ventole della stessa periferica" />
+                    </StackPanel>
+                </Grid>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>
