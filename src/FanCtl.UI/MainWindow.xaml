@@ -29,28 +29,7 @@
         <!-- Sidebar -->
         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Hidden" Focusable="False">
             <StackPanel Margin="0,6,0,0">
-                <TextBlock Style="{StaticResource Section}" Text="TEMPERATURE" />
-                <ItemsControl x:Name="TempList" Focusable="False">
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate DataType="{x:Type local:TempVm}">
-                            <Grid Margin="10,3" ToolTip="{Binding Hw}">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="Auto" />
-                                </Grid.ColumnDefinitions>
-                                <StackPanel>
-                                    <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" />
-                                    <TextBlock Text="{Binding Hw}" Style="{StaticResource Dim}" FontSize="10.5"
-                                               Foreground="{DynamicResource Text3}" TextTrimming="CharacterEllipsis" />
-                                </StackPanel>
-                                <TextBlock Grid.Column="1" Text="{Binding Text}" FontFamily="{StaticResource Display}"
-                                           FontSize="18" VerticalAlignment="Center" Margin="10,0,0,0" />
-                            </Grid>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-
-                <Grid Margin="0,20,0,0">
+                <Grid>
                     <TextBlock Style="{StaticResource Section}" Text="VENTOLE" />
                     <TextBlock Text="trascina per riordinare" FontSize="10.5" Foreground="{DynamicResource Text3}"
                                HorizontalAlignment="Right" Margin="0,0,10,0" />
@@ -86,6 +65,27 @@
                 </ListBox>
                 <Button x:Name="EmptyToggle" Style="{StaticResource Ghost}" HorizontalAlignment="Left" Margin="0,4,0,0"
                         Click="EmptyToggle_Click" Visibility="Collapsed" />
+
+                <TextBlock Style="{StaticResource Section}" Margin="10,20,0,8" Text="TEMPERATURE" />
+                <ItemsControl x:Name="TempList" Focusable="False">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate DataType="{x:Type local:TempVm}">
+                            <Grid Margin="10,3" ToolTip="{Binding Hw}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel>
+                                    <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" />
+                                    <TextBlock Text="{Binding Hw}" Style="{StaticResource Dim}" FontSize="10.5"
+                                               Foreground="{DynamicResource Text3}" TextTrimming="CharacterEllipsis" />
+                                </StackPanel>
+                                <TextBlock Grid.Column="1" Text="{Binding Text}" FontFamily="{StaticResource Display}"
+                                           FontSize="18" VerticalAlignment="Center" Margin="10,0,0,0" />
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
             </StackPanel>
         </ScrollViewer>
 
