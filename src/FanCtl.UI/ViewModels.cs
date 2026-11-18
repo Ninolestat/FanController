@@ -48,7 +48,7 @@ public sealed class FanVm : Vm
     double _opacity = 1;
     public string RpmText { get => _rpmText; private set => Set(ref _rpmText, value); }
     public string DutyText { get => _dutyText; private set => Set(ref _dutyText, value); }
-    public double Opacity { get => _opacity; private set => Set(ref _opacity, value); }
+    public double Opacity { get => _opacity; set => Set(ref _opacity, value); }
 
     public float Min { get; private set; }
 
@@ -73,6 +73,5 @@ public sealed class FanVm : Vm
         Rpm = rpm; Duty = duty; Input = input; Min = min;
         RpmText = float.IsNaN(rpm) ? "—" : $"{rpm:0} RPM";
         DutyText = float.IsNaN(duty) ? "" : $"{duty:0}%";
-        Opacity = !float.IsNaN(rpm) && rpm < 1 ? 0.55 : 1;
     }
 }

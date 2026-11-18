@@ -251,6 +251,7 @@ public partial class MainWindow : Window
                            && (float.IsNaN(f.Duty) || f.Duty > 0) && c.Alias == null
                            || c.Hidden;
             if (isEmpty) empty++;
+            f.Opacity = !float.IsNaN(f.Rpm) && f.Rpm < 1 && c.Alias == null ? 0.55 : 1;
             f.Visibility = isEmpty && !_showEmpty && f != _sel ? Visibility.Collapsed : Visibility.Visible;
         }
         EmptyToggle.Visibility = empty > 0 ? Visibility.Visible : Visibility.Collapsed;
@@ -374,6 +375,7 @@ public partial class MainWindow : Window
         var c = CfgFor(_sel);
         c.Alias = s.Length == 0 || s == _sel.DefaultName ? null : s;
         _sel.Name = c.Alias ?? _sel.DefaultName;
+        RefreshStatuses();
         ScheduleSave();
     }
 
