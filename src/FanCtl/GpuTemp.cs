@@ -49,7 +49,8 @@ internal sealed unsafe partial class GpuTemp : IDisposable
                 var a = buf[i];
                 string? name = AdapterName(a.hAdapter);
                 if (name != null && Read(a.hAdapter) is > 0 && !name.StartsWith("Microsoft", StringComparison.Ordinal))
-                    list.Add(new GpuTemp(a.hAdapter, $"/gpu-wddm/{a.LuidHigh:x}{a.LuidLow:x8}/temperature/0", name));
+                    // Use stable enumeration index rather than LUID, which changes across reboots.
+                    list.Add(new GpuTemp(a.hAdapter, $"/gpu-wddm/{list.Count}/temperature/0", name));
                 else
                 {
                     uint h = a.hAdapter;

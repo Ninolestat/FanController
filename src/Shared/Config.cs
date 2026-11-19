@@ -92,7 +92,18 @@ public static class ConfigStore
                 var cfg = JsonSerializer.Deserialize(fs, ConfigJson.Default.AppConfig);
                 if (cfg != null)
                 {
-                    foreach (var f in cfg.Fans) f.Points.Sort((a, b) => a.T.CompareTo(b.T));
+                    foreach (var f in cfg.Fans)
+                    {
+                        f.Points.Sort((a, b) => a.T.CompareTo(b.T));
+                        // Migrate legacy LUID-based WDDM GPU sensor IDs (e.g. /gpu-wddm/000013e32/temperature/0) to index 0.
+                        if (f.Sensor != null && f.Sensor.StartsWith("/gpu-wddm/", StringComparison.Ordinal))
+                        {
+                            const string prefix = "/gpu-wddm/";
+                            int slash = f.Sensor.IndexOf('/', prefix.Length);
+                            if (slash > prefix.Length && slash - prefix.Length >= 8)
+                                f.Sensor = "/gpu-wddm/0" + f.Sensor[slash..];
+                        }
+                    }
                     if (cfg.IntervalMs < 250) cfg.IntervalMs = 250;
                     return cfg;
                 }
